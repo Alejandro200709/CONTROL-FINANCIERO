@@ -1,70 +1,69 @@
-# Mi Control Financiero — PWA
+# Mi Control Financiero — GitHub Pages
 
-Aplicación web móvil para registrar ingresos, gastos diarios, ahorro, inversiones y deudas.
+Versión preparada para publicarse directamente con GitHub Pages.
 
-## Qué incluye
+## Privacidad
 
-- Dashboard mensual
-- Carga diaria rápida
-- Campo “¿En qué fue?” y detalle del gasto
-- Filtros y búsqueda
-- Resumen por día
-- Gráficos de categorías y gasto diario
-- Fondo de emergencia
-- Control de Gourmet Card
-- Deudas activas
-- Modo claro, oscuro y automático
-- PWA instalable en iPhone
-- Exportación / importación de respaldo JSON
-- Funciona offline después de la primera carga
+El repositorio contiene únicamente el código de la aplicación.
+Los importes personales se cargan en el primer inicio y se guardan en `localStorage`
+del navegador del dispositivo. No hay salario, ahorro ni cuotas personales escritos
+en el código fuente de esta versión.
 
-## Probar en tu PC
+## Publicar
 
-La PWA necesita servirse por HTTP/HTTPS para que el service worker funcione.
+1. Crear un repositorio en GitHub.
+2. Subir todos los archivos de esta carpeta a la raíz.
+3. En GitHub abrir: Settings → Pages.
+4. En Build and deployment elegir: Deploy from a branch.
+5. Branch: `main`.
+6. Folder: `/ (root)`.
+7. Guardar.
+8. Abrir la URL que GitHub Pages muestre.
 
-Con VS Code podés usar Live Server, o desde la terminal:
+## iPhone
 
-```bash
-python -m http.server 5500
-```
+1. Abrir la URL de GitHub Pages con Safari.
+2. Compartir.
+3. Agregar a Inicio.
+4. Activar “Abrir como app web”.
+5. Agregar.
 
-Luego abrí:
+## Primer inicio
 
-http://localhost:5500
+La app pedirá:
+- ahorro acumulado inicial;
+- cantidad de meses objetivo para el fondo de emergencia.
 
-## Subir a GitHub
+Después cargá desde la pestaña `Cargar`:
+- salario;
+- Gourmet;
+- gastos fijos;
+- gastos variables;
+- ahorros;
+- inversiones.
 
-1. Crear un repositorio nuevo.
-2. Subir todos los archivos de esta carpeta a la raíz del repositorio.
-3. No hace falta compilar nada: es HTML/CSS/JS puro.
+La meta del fondo de emergencia se calcula a partir de los gastos marcados como `Fijo`
+que registres en el mes.
 
-## Publicar en Netlify
+## Respaldo
 
-Opción simple:
-1. Entrar a Netlify.
-2. Agregar un nuevo sitio desde Git.
-3. Conectar GitHub.
-4. Elegir el repositorio.
-5. Build command: dejar vacío.
-6. Publish directory: `.`
-7. Deploy.
+Usá Más → Exportar respaldo para descargar periódicamente un archivo JSON.
 
-También podés arrastrar la carpeta completa a Netlify Drop.
 
-## Instalar en iPhone
+## Lógica del ahorro líquido
 
-Una vez publicada por HTTPS:
-1. Abrí la URL en Safari.
-2. Tocá Compartir.
-3. Elegí “Agregar a pantalla de inicio”.
-4. Abrila desde el nuevo ícono.
+La tarjeta **Ahorro acumulado** funciona como un saldo vivo:
 
-## Importante sobre los datos
+- parte del ahorro inicial informado;
+- los ingresos en efectivo posteriores a la fecha de corte **suman**;
+- los gastos en efectivo posteriores a la fecha de corte **restan**;
+- las inversiones posteriores a la fecha de corte **restan del ahorro líquido**;
+- movimientos con cuenta `Gourmet` no modifican el ahorro líquido;
+- los movimientos tipo `Ahorro` sirven para medir cuánto decidiste reservar, pero no se suman de nuevo al saldo líquido para evitar duplicaciones.
 
-Esta versión guarda los datos con `localStorage` en el navegador del dispositivo.
-Eso significa que iPhone y PC NO se sincronizan todavía.
+Ejemplo:
+- saldo inicial: Gs. 3.000.000;
+- cobrás Gs. 800.000 después de la fecha de corte → saldo: Gs. 3.800.000;
+- gastás Gs. 120.000 → saldo: Gs. 3.680.000.
 
-Usá “Exportar respaldo” periódicamente.
-
-La siguiente evolución recomendada es conectar una base de datos (por ejemplo, Supabase)
-para compartir la misma información entre iPhone y PC con inicio de sesión.
+Los movimientos con fecha igual o anterior a la fecha de corte se consideran ya incluidos en el saldo inicial.

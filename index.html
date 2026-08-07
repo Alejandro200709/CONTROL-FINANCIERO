@@ -62,7 +62,7 @@
           <article class="metric-card">
             <span>Ahorro acumulado</span>
             <strong id="savingsCard">Gs. 0</strong>
-            <small id="savingsSubtitle">Desde saldo inicial</small>
+            <small id="savingsSubtitle">Se actualiza con ingresos y gastos</small>
           </article>
           <article class="metric-card">
             <span>Tasa ahorro + inversión</span>
@@ -279,6 +279,9 @@
           <button id="themeRow">
             <span><b>Apariencia</b><small id="themeLabel">Automático</small></span><span>›</span>
           </button>
+          <button id="setupRow">
+            <span><b>Datos iniciales</b><small>Editar ahorro inicial y meta de emergencia</small></span><span>›</span>
+          </button>
           <button id="exportBtn">
             <span><b>Exportar respaldo</b><small>Descargar archivo JSON</small></span><span>›</span>
           </button>
@@ -302,6 +305,37 @@
       <button data-nav="stats"><span class="nav-icon">⌁</span><span>Análisis</span></button>
       <button data-nav="more"><span class="nav-icon">•••</span><span>Más</span></button>
     </nav>
+  </div>
+
+
+  <div class="sheet hidden" id="setupSheet">
+    <div class="sheet-backdrop"></div>
+    <div class="sheet-card setup-card">
+      <div class="sheet-handle"></div>
+      <div class="page-heading">
+        <p class="eyebrow">PRIMER INICIO</p>
+        <h2>Configurá tus finanzas</h2>
+        <p>Indicá cuánto tenías ahorrado y la fecha exacta de ese saldo. Desde el día siguiente, los ingresos sumarán y los gastos restarán automáticamente.</p>
+      </div>
+      <form id="setupForm">
+        <label><span>Ahorro acumulado inicial (Gs.)</span>
+          <input type="number" id="setupSavings" min="0" step="1000" inputmode="numeric" placeholder="0" required>
+        </label>
+        <label><span>Fecha de corte de ese saldo</span>
+          <input type="date" id="setupSavingsDate" required>
+        </label>
+        <label><span>Meta de fondo de emergencia</span>
+          <select id="setupEmergencyMonths">
+            <option value="3">3 meses de gastos fijos</option>
+            <option value="6" selected>6 meses de gastos fijos</option>
+            <option value="9">9 meses de gastos fijos</option>
+            <option value="12">12 meses de gastos fijos</option>
+          </select>
+        </label>
+        <p class="muted">Después cargá tu salario, Gourmet y gastos fijos desde la pestaña <b>Cargar</b>. El sistema aprenderá tu estructura mensual a partir de esos movimientos.</p>
+        <button class="btn btn-primary full" type="submit">Comenzar</button>
+      </form>
+    </div>
   </div>
 
   <div class="sheet hidden" id="detailSheet">

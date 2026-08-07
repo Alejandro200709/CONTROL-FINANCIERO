@@ -20,32 +20,16 @@ const icons={
 
 const seed={
   settings:{
-    salary:5460000,
-    gourmet:900000,
-    openingSavings:3860525,
-    openingSavingsDate:"2026-08-05",
+    openingSavings:0,
+    openingSavingsDate:"",
     saveRate:.10,
     investRate:.05,
     bufferRate:.10,
-    emergencyMonths:6
+    emergencyMonths:6,
+    setupComplete:false
   },
-  debts:[
-    {id:"auto",name:"Auto",monthly:1500000,total:24,paid:6},
-    {id:"bristol",name:"Bristol",monthly:228000,total:6,paid:1}
-  ],
-  transactions:[
-    {id:"seed-salary",date:"2026-08-01",type:"Ingreso",category:"Salario",description:"Salario fijo de agosto ya cobrado",detail:"No volver a cargar el salario fijo de agosto.",amount:5460000,account:"Banco",priority:"Necesario",nature:"Fijo"},
-    {id:"seed-gourmet",date:"2026-08-01",type:"Ingreso",category:"Beneficio Gourmet",description:"Gourmet Card agosto",detail:"Beneficio destinado a compras del hogar.",amount:900000,account:"Gourmet",priority:"Necesario",nature:"Fijo"},
-    {id:"seed-auto",date:"2026-08-05",type:"Gasto",category:"Cuota auto",description:"Cuota mensual del auto",detail:"",amount:1500000,account:"Banco",priority:"Necesario",nature:"Fijo"},
-    {id:"seed-seguro",date:"2026-08-05",type:"Gasto",category:"Seguro auto",description:"Seguro del auto",detail:"",amount:250000,account:"Banco",priority:"Necesario",nature:"Fijo"},
-    {id:"seed-gps",date:"2026-08-05",type:"Gasto",category:"GPS auto",description:"Servicio GPS del auto",detail:"",amount:95000,account:"Banco",priority:"Necesario",nature:"Fijo"},
-    {id:"seed-stream",date:"2026-08-05",type:"Gasto",category:"Streaming",description:"Netflix, Prime, HBO y otros",detail:"",amount:75000,account:"Tarjeta",priority:"Deseo",nature:"Fijo"},
-    {id:"seed-chatgpt",date:"2026-08-05",type:"Gasto",category:"ChatGPT",description:"Suscripción ChatGPT",detail:"",amount:27500,account:"Tarjeta",priority:"Necesario",nature:"Fijo"},
-    {id:"seed-internet",date:"2026-08-05",type:"Gasto",category:"Internet hogar",description:"Internet de casa",detail:"",amount:60000,account:"Banco",priority:"Necesario",nature:"Fijo"},
-    {id:"seed-plan",date:"2026-08-05",type:"Gasto",category:"Plan celular",description:"Plan celular",detail:"",amount:75000,account:"Banco",priority:"Necesario",nature:"Fijo"},
-    {id:"seed-casa",date:"2026-08-05",type:"Gasto",category:"Aporte casa",description:"Aporte mensual para la casa",detail:"",amount:250000,account:"Banco",priority:"Necesario",nature:"Fijo"},
-    {id:"seed-bristol",date:"2026-08-05",type:"Gasto",category:"Cuota Bristol",description:"Cuota Bristol",detail:"",amount:228000,account:"Banco",priority:"Necesario",nature:"Fijo"}
-  ]
+  debts:[],
+  transactions:[]
 };
 
 let state=loadState();
@@ -67,7 +51,24 @@ function loadState(){
 function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
 
 function fixedBase(){
-  return 1500000+250000+95000+75000+27500+60000+75000+250000+228000;
+  const tx=monthTx().filter(t=>t.type==="Gasto"&&t.nature==="Fijo"&&t.account!=="Gourmet");
+  return sumTx(tx);
+}
+function affectsLiquidSavings(t){
+  const cutoff=state.settings.openingSavingsDate||"";
+  if(!cutoff || !t.date || t.date<=cutoff) return false;
+  if(t.account==="Gourmet") return false;
+  return t.type==="Ingreso" || t.type==="Gasto" || t.type==="Inversion";
+}
+function currentLiquidSavings(){
+  let balance=Number(state.settings.openingSavings||0);
+  state.transactions.filter(affectsLiquidSavings).forEach(t=>{
+    const amount=Number(t.amount||0);
+    if(t.type==="Ingreso") balance+=amount;
+    if(t.type==="Gasto") balance-=amount;
+    if(t.type==="Inversion") balance-=amount;
+  });
+  return balance;
 }
 function selectedMonth(){return $("monthPicker").value || todayISO().slice(0,7);}
 function monthTx(){return state.transactions.filter(t=>monthOf(t.date)===selectedMonth());}
@@ -82,6 +83,7 @@ function init(){
   bindEvents();
   applyTheme(localStorage.getItem(THEME_KEY)||"auto");
   renderAll();
+  if(!state.settings.setupComplete) openSetup();
 }
 function bindEvents(){
   document.querySelectorAll("[data-nav]").forEach(el=>el.addEventListener("click",()=>navigate(el.dataset.nav)));
@@ -96,11 +98,13 @@ function bindEvents(){
   $("filterCategory").onchange=renderMovements;
   $("themeBtn").onclick=cycleTheme;
   $("themeRow").onclick=cycleTheme;
+  $("setupRow").onclick=openSetup;
   $("backupBtn").onclick=exportBackup;
   $("exportBtn").onclick=exportBackup;
   $("importInput").onchange=importBackup;
   document.querySelectorAll("[data-close-sheet]").forEach(el=>el.onclick=closeSheet);
   $("deleteTxBtn").onclick=deleteSelectedTx;
+  $("setupForm").onsubmit=saveSetup;
 }
 function navigate(view){
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
@@ -180,7 +184,7 @@ function renderHome(){
   const gourmetIncome=sumTx(tx.filter(t=>t.type==="Ingreso"&&t.account==="Gourmet"));
   const gourmetExpense=sumTx(tx.filter(t=>t.type==="Gasto"&&t.account==="Gourmet"));
   const free=income-expenses-saving-investing;
-  const accumulatedSavings=state.settings.openingSavings+sumTx(state.transactions.filter(t=>t.type==="Ahorro"));
+  const accumulatedSavings=currentLiquidSavings();
   const rate=income?(saving+investing)/income:0;
 
   $("heroBalance").textContent=money(free);
@@ -189,6 +193,7 @@ function renderHome(){
   $("heroSaveInvest").textContent=money(saving+investing);
   $("gourmetCard").textContent=money(gourmetIncome-gourmetExpense);
   $("savingsCard").textContent=money(accumulatedSavings);
+  $("savingsSubtitle").textContent=state.settings.openingSavingsDate?`Desde ${shortDate(state.settings.openingSavingsDate)} · ingresos suman, gastos restan`:"Se actualiza con ingresos y gastos";
   $("rateCard").textContent=pct(rate);
 
   $("heroStatus").textContent=free<0?"Déficit":free<income*.15?"Ajustado":"En control";
@@ -197,7 +202,7 @@ function renderHome(){
   const today=todayISO();
   const todayExp=sumTx(state.transactions.filter(t=>t.date===today&&t.type==="Gasto"));
   $("todayExpense").textContent=money(todayExp);
-  $("todaySubtitle").textContent=today===state.settings.openingSavingsDate?"Hoy · fecha de corte":"Hoy";
+  $("todaySubtitle").textContent="Hoy";
 
   const goal=fixedBase()*state.settings.emergencyMonths;
   const er=goal?Math.min(accumulatedSavings/goal,1):0;
@@ -378,6 +383,26 @@ function longDate(s){
 }
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.remove("hidden");setTimeout(()=>$("toast").classList.add("hidden"),1900);}
+
+
+function openSetup(){
+  $("setupSavings").value=state.settings.openingSavings||"";
+  $("setupSavingsDate").value=state.settings.openingSavingsDate||todayISO();
+  $("setupEmergencyMonths").value=String(state.settings.emergencyMonths||6);
+  $("setupSheet").classList.remove("hidden");
+}
+function saveSetup(e){
+  e.preventDefault();
+  state.settings.openingSavings=Number($("setupSavings").value||0);
+  state.settings.openingSavingsDate=$("setupSavingsDate").value||todayISO();
+  state.settings.emergencyMonths=Number($("setupEmergencyMonths").value||6);
+  state.settings.setupComplete=true;
+  saveState();
+  $("setupSheet").classList.add("hidden");
+  renderAll();
+  toast("Configuración guardada");
+  navigate("add");
+}
 
 function exportBackup(){
   const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});

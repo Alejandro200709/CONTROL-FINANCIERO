@@ -1,5 +1,5 @@
 
-const CACHE="finanzas-pwa-v2";
+const CACHE="finanzas-pwa-v3";
 const FILES=["./","index.html","styles.css","app.js","manifest.json","icon-192.png","icon-512.png"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)));
