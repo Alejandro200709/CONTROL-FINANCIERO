@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Finanzas" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>Mi Control Financiero</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">FINANZAS PERSONALES</p>
+        <h1>Mi Control Financiero</h1>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="themeBtn" aria-label="Cambiar tema" title="Cambiar tema">◐</button>
+        <button class="avatar" id="backupBtn" aria-label="Exportar respaldo" title="Exportar respaldo">AB</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- INICIO -->
+      <section class="view active" id="view-home">
+        <div class="month-strip">
+          <div>
+            <span class="section-label">Mes analizado</span>
+            <input type="month" id="monthPicker" />
+          </div>
+          <button class="btn btn-primary btn-compact" id="quickAddBtn">+ Cargar</button>
+        </div>
+
+        <section class="hero-card">
+          <div class="hero-row">
+            <div>
+              <span>Disponible real del mes</span>
+              <strong id="heroBalance">Gs. 0</strong>
+            </div>
+            <div class="hero-pill" id="heroStatus">En control</div>
+          </div>
+          <div class="hero-meta">
+            <div><span>Ingresos</span><b id="heroIncome">Gs. 0</b></div>
+            <div><span>Gastos</span><b id="heroExpense">Gs. 0</b></div>
+            <div><span>Ahorro + inversión</span><b id="heroSaveInvest">Gs. 0</b></div>
+          </div>
+        </section>
+
+        <section class="metric-grid">
+          <article class="metric-card">
+            <span>Saldo Gourmet</span>
+            <strong id="gourmetCard">Gs. 0</strong>
+            <small>Compras del hogar</small>
+          </article>
+          <article class="metric-card">
+            <span>Ahorro acumulado</span>
+            <strong id="savingsCard">Gs. 0</strong>
+            <small id="savingsSubtitle">Desde saldo inicial</small>
+          </article>
+          <article class="metric-card">
+            <span>Tasa ahorro + inversión</span>
+            <strong id="rateCard">0%</strong>
+            <small>Sobre ingreso del mes</small>
+          </article>
+          <article class="metric-card">
+            <span>Gasto de hoy</span>
+            <strong id="todayExpense">Gs. 0</strong>
+            <small id="todaySubtitle">Hoy</small>
+          </article>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">PANORAMA</p>
+              <h2>Gastos del mes por categoría</h2>
+            </div>
+            <button class="text-btn" data-nav="stats">Ver análisis</button>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="categoryChart" height="210"></canvas>
+          </div>
+          <div id="topCategories" class="category-summary"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">FONDO DE EMERGENCIA</p>
+              <h2>Avance de la meta</h2>
+            </div>
+            <strong id="emergencyPct">0%</strong>
+          </div>
+          <div class="progress"><div id="emergencyBar"></div></div>
+          <div class="split-info">
+            <span id="emergencyCurrent">Gs. 0</span>
+            <span id="emergencyGoal">Meta Gs. 0</span>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">ÚLTIMOS MOVIMIENTOS</p>
+              <h2>Actividad reciente</h2>
+            </div>
+            <button class="text-btn" data-nav="movements">Ver todos</button>
+          </div>
+          <div id="recentTransactions" class="transaction-list"></div>
+        </section>
+      </section>
+
+      <!-- CARGA DIARIA -->
+      <section class="view" id="view-add">
+        <div class="page-heading">
+          <p class="eyebrow">REGISTRO DIARIO</p>
+          <h2>Cargar movimiento</h2>
+          <p>Registrá en segundos lo que gastaste, cobraste, ahorraste o invertiste.</p>
+        </div>
+
+        <form class="panel form-panel" id="movementForm">
+          <div class="segmented" id="typeSegment">
+            <button type="button" data-type="Gasto" class="active">Gasto</button>
+            <button type="button" data-type="Ingreso">Ingreso</button>
+            <button type="button" data-type="Ahorro">Ahorro</button>
+            <button type="button" data-type="Inversion">Inversión</button>
+          </div>
+
+          <div class="form-grid two">
+            <label>
+              <span>Fecha</span>
+              <input type="date" id="date" required />
+            </label>
+            <label>
+              <span>Cuenta</span>
+              <select id="account">
+                <option>Banco</option>
+                <option>Efectivo</option>
+                <option>Tarjeta</option>
+                <option>Gourmet</option>
+              </select>
+            </label>
+          </div>
+
+          <label>
+            <span>Categoría</span>
+            <select id="category" required></select>
+          </label>
+
+          <label>
+            <span>¿En qué fue?</span>
+            <input type="text" id="description" maxlength="80" placeholder="Ej.: supermercado Stock, cena, repuesto auto..." required />
+          </label>
+
+          <label>
+            <span>Detalle / motivo</span>
+            <textarea id="detail" rows="3" maxlength="200" placeholder="Opcional: qué compraste, para quién, por qué, etc."></textarea>
+          </label>
+
+          <label>
+            <span>Monto (Gs.)</span>
+            <input class="amount-input" type="number" id="amount" min="0" step="1000" inputmode="numeric" placeholder="0" required />
+          </label>
+
+          <div class="form-grid two">
+            <label>
+              <span>Necesidad</span>
+              <select id="priority">
+                <option>Necesario</option>
+                <option>Deseo</option>
+                <option>Meta</option>
+              </select>
+            </label>
+            <label>
+              <span>Frecuencia</span>
+              <select id="nature">
+                <option>Variable</option>
+                <option>Fijo</option>
+              </select>
+            </label>
+          </div>
+
+          <button class="btn btn-primary full" type="submit">Guardar movimiento</button>
+        </form>
+
+        <section class="panel quick-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">ATAJOS</p>
+              <h2>Gastos frecuentes</h2>
+            </div>
+          </div>
+          <div id="quickButtons" class="quick-grid"></div>
+        </section>
+      </section>
+
+      <!-- MOVIMIENTOS -->
+      <section class="view" id="view-movements">
+        <div class="page-heading">
+          <p class="eyebrow">HISTORIAL</p>
+          <h2>Movimientos</h2>
+          <p>Buscá, filtrá y revisá en detalle en qué se fue tu dinero.</p>
+        </div>
+
+        <section class="panel filter-panel">
+          <input type="search" id="searchInput" placeholder="Buscar supermercado, auto, horas extra..." />
+          <div class="filter-row">
+            <select id="filterType">
+              <option value="">Todos los tipos</option>
+              <option>Gasto</option>
+              <option>Ingreso</option>
+              <option>Ahorro</option>
+              <option>Inversion</option>
+            </select>
+            <select id="filterCategory">
+              <option value="">Todas las categorías</option>
+            </select>
+          </div>
+        </section>
+
+        <div class="daily-summary" id="dailySummary"></div>
+        <div id="allTransactions" class="transaction-list large-list"></div>
+      </section>
+
+      <!-- ESTADÍSTICAS -->
+      <section class="view" id="view-stats">
+        <div class="page-heading">
+          <p class="eyebrow">ANÁLISIS</p>
+          <h2>Estadísticas</h2>
+          <p>Visualizá tendencias, categorías y comportamiento diario.</p>
+        </div>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div><p class="eyebrow">EVOLUCIÓN</p><h2>Gasto diario del mes</h2></div>
+          </div>
+          <div class="chart-wrap tall"><canvas id="dailyChart" height="250"></canvas></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div><p class="eyebrow">DISTRIBUCIÓN</p><h2>Top categorías de gasto</h2></div>
+          </div>
+          <div id="statsCategories" class="stats-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div><p class="eyebrow">COMPORTAMIENTO</p><h2>Necesario vs deseo</h2></div>
+          </div>
+          <div class="comparison-grid">
+            <div><span>Necesario</span><strong id="necessaryTotal">Gs. 0</strong></div>
+            <div><span>Deseo</span><strong id="wantTotal">Gs. 0</strong></div>
+          </div>
+        </section>
+      </section>
+
+      <!-- MÁS -->
+      <section class="view" id="view-more">
+        <div class="page-heading">
+          <p class="eyebrow">CONFIGURACIÓN</p>
+          <h2>Más</h2>
+          <p>Parámetros, deudas, apariencia y respaldo.</p>
+        </div>
+
+        <section class="panel">
+          <div class="panel-head"><div><p class="eyebrow">DEUDAS</p><h2>Cuotas activas</h2></div></div>
+          <div id="debtsList" class="debt-list"></div>
+        </section>
+
+        <section class="panel settings-list">
+          <button id="themeRow">
+            <span><b>Apariencia</b><small id="themeLabel">Automático</small></span><span>›</span>
+          </button>
+          <button id="exportBtn">
+            <span><b>Exportar respaldo</b><small>Descargar archivo JSON</small></span><span>›</span>
+          </button>
+          <label class="settings-upload">
+            <span><b>Importar respaldo</b><small>Restaurar desde archivo JSON</small></span><span>›</span>
+            <input type="file" id="importInput" accept=".json" hidden />
+          </label>
+        </section>
+
+        <section class="panel note-panel">
+          <p><b>Saldo inicial de ahorro:</b> Gs. 3.860.525 al 05/08/2026.</p>
+          <p><b>Importante:</b> esta versión guarda los datos en este navegador. Para sincronizar iPhone y PC después conectaremos una base de datos.</p>
+        </section>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="active" data-nav="home"><span class="nav-icon">⌂</span><span>Inicio</span></button>
+      <button data-nav="movements"><span class="nav-icon">≡</span><span>Movimientos</span></button>
+      <button class="nav-add" data-nav="add"><span class="nav-plus">＋</span><span>Cargar</span></button>
+      <button data-nav="stats"><span class="nav-icon">⌁</span><span>Análisis</span></button>
+      <button data-nav="more"><span class="nav-icon">•••</span><span>Más</span></button>
+    </nav>
+  </div>
+
+  <div class="sheet hidden" id="detailSheet">
+    <div class="sheet-backdrop" data-close-sheet></div>
+    <div class="sheet-card">
+      <div class="sheet-handle"></div>
+      <div id="sheetContent"></div>
+      <div class="sheet-actions">
+        <button class="btn btn-danger" id="deleteTxBtn">Eliminar</button>
+        <button class="btn btn-secondary" data-close-sheet>Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
