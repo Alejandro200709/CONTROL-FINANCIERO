@@ -1,12 +1,12 @@
 {
   "name": "Mi Control Financiero",
   "short_name": "Finanzas",
-  "description": "Control de ingresos, gastos diarios, ahorro, inversiones y deudas.",
+  "description": "Control personal de gastos, ingresos, ahorro, inversión y multimoneda.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f7fa",
-  "theme_color": "#0f172a",
+  "background_color": "#F8FAFC",
+  "theme_color": "#0F172A",
   "icons": [
     {
       "src": "icon-192.png",

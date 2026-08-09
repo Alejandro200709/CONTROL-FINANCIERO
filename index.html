@@ -1,356 +1,267 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f172a" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Finanzas" />
-  <meta name="format-detection" content="telephone=no" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F8FAFC">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Finanzas">
+  <meta name="format-detection" content="telephone=no">
   <title>Mi Control Financiero</title>
-
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">FINANZAS PERSONALES</p>
-        <h1>Mi Control Financiero</h1>
-      </div>
-      <div class="top-actions">
-        <button class="icon-btn" id="themeBtn" aria-label="Cambiar tema" title="Cambiar tema">◐</button>
-        <button class="avatar" id="backupBtn" aria-label="Exportar respaldo" title="Exportar respaldo">AB</button>
-      </div>
-    </header>
+<div class="app-shell">
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">FINANZAS PERSONALES</p>
+      <h1>Mi Control Financiero</h1>
+    </div>
+    <div class="top-actions">
+      <button class="icon-button" id="themeBtn" aria-label="Cambiar tema">◐</button>
+      <button class="icon-button profile" id="backupBtn" aria-label="Exportar respaldo">AB</button>
+    </div>
+  </header>
 
-    <main>
-      <!-- INICIO -->
-      <section class="view active" id="view-home">
-        <div class="month-strip">
+  <main>
+    <section class="view active" id="view-home">
+      <div class="month-row">
+        <div>
+          <span class="field-label">Mes analizado</span>
+          <input class="month-input" type="month" id="monthPicker">
+        </div>
+        <button class="button primary compact" id="quickAddBtn">+ Cargar</button>
+      </div>
+
+      <section class="balance-card">
+        <div class="balance-top">
           <div>
-            <span class="section-label">Mes analizado</span>
-            <input type="month" id="monthPicker" />
+            <span class="muted-on-dark">Disponible del mes</span>
+            <strong id="monthBalance">₲ 0</strong>
           </div>
-          <button class="btn btn-primary btn-compact" id="quickAddBtn">+ Cargar</button>
+          <span class="status-pill" id="monthStatus">En control</span>
         </div>
-
-        <section class="hero-card">
-          <div class="hero-row">
-            <div>
-              <span>Disponible real del mes</span>
-              <strong id="heroBalance">Gs. 0</strong>
-            </div>
-            <div class="hero-pill" id="heroStatus">En control</div>
-          </div>
-          <div class="hero-meta">
-            <div><span>Ingresos</span><b id="heroIncome">Gs. 0</b></div>
-            <div><span>Gastos</span><b id="heroExpense">Gs. 0</b></div>
-            <div><span>Ahorro + inversión</span><b id="heroSaveInvest">Gs. 0</b></div>
-          </div>
-        </section>
-
-        <section class="metric-grid">
-          <article class="metric-card">
-            <span>Saldo Gourmet</span>
-            <strong id="gourmetCard">Gs. 0</strong>
-            <small>Compras del hogar</small>
-          </article>
-          <article class="metric-card">
-            <span>Ahorro acumulado</span>
-            <strong id="savingsCard">Gs. 0</strong>
-            <small id="savingsSubtitle">Se actualiza con ingresos y gastos</small>
-          </article>
-          <article class="metric-card">
-            <span>Tasa ahorro + inversión</span>
-            <strong id="rateCard">0%</strong>
-            <small>Sobre ingreso del mes</small>
-          </article>
-          <article class="metric-card">
-            <span>Gasto de hoy</span>
-            <strong id="todayExpense">Gs. 0</strong>
-            <small id="todaySubtitle">Hoy</small>
-          </article>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div>
-              <p class="eyebrow">PANORAMA</p>
-              <h2>Gastos del mes por categoría</h2>
-            </div>
-            <button class="text-btn" data-nav="stats">Ver análisis</button>
-          </div>
-          <div class="chart-wrap">
-            <canvas id="categoryChart" height="210"></canvas>
-          </div>
-          <div id="topCategories" class="category-summary"></div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div>
-              <p class="eyebrow">FONDO DE EMERGENCIA</p>
-              <h2>Avance de la meta</h2>
-            </div>
-            <strong id="emergencyPct">0%</strong>
-          </div>
-          <div class="progress"><div id="emergencyBar"></div></div>
-          <div class="split-info">
-            <span id="emergencyCurrent">Gs. 0</span>
-            <span id="emergencyGoal">Meta Gs. 0</span>
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div>
-              <p class="eyebrow">ÚLTIMOS MOVIMIENTOS</p>
-              <h2>Actividad reciente</h2>
-            </div>
-            <button class="text-btn" data-nav="movements">Ver todos</button>
-          </div>
-          <div id="recentTransactions" class="transaction-list"></div>
-        </section>
+        <div class="balance-grid">
+          <div><span>Ingresos</span><b id="monthIncome">₲ 0</b></div>
+          <div><span>Gastos</span><b id="monthExpense">₲ 0</b></div>
+          <div><span>Inversión</span><b id="monthInvestment">₲ 0</b></div>
+        </div>
       </section>
 
-      <!-- CARGA DIARIA -->
-      <section class="view" id="view-add">
-        <div class="page-heading">
-          <p class="eyebrow">REGISTRO DIARIO</p>
-          <h2>Cargar movimiento</h2>
-          <p>Registrá en segundos lo que gastaste, cobraste, ahorraste o invertiste.</p>
-        </div>
-
-        <form class="panel form-panel" id="movementForm">
-          <div class="segmented" id="typeSegment">
-            <button type="button" data-type="Gasto" class="active">Gasto</button>
-            <button type="button" data-type="Ingreso">Ingreso</button>
-            <button type="button" data-type="Ahorro">Ahorro</button>
-            <button type="button" data-type="Inversion">Inversión</button>
-          </div>
-
-          <div class="form-grid two">
-            <label>
-              <span>Fecha</span>
-              <input type="date" id="date" required />
-            </label>
-            <label>
-              <span>Cuenta</span>
-              <select id="account">
-                <option>Banco</option>
-                <option>Efectivo</option>
-                <option>Tarjeta</option>
-                <option>Gourmet</option>
-              </select>
-            </label>
-          </div>
-
-          <label>
-            <span>Categoría</span>
-            <select id="category" required></select>
-          </label>
-
-          <label>
-            <span>¿En qué fue?</span>
-            <input type="text" id="description" maxlength="80" placeholder="Ej.: supermercado Stock, cena, repuesto auto..." required />
-          </label>
-
-          <label>
-            <span>Detalle / motivo</span>
-            <textarea id="detail" rows="3" maxlength="200" placeholder="Opcional: qué compraste, para quién, por qué, etc."></textarea>
-          </label>
-
-          <label>
-            <span>Monto (Gs.)</span>
-            <input class="amount-input" type="number" id="amount" min="0" step="1000" inputmode="numeric" placeholder="0" required />
-          </label>
-
-          <div class="form-grid two">
-            <label>
-              <span>Necesidad</span>
-              <select id="priority">
-                <option>Necesario</option>
-                <option>Deseo</option>
-                <option>Meta</option>
-              </select>
-            </label>
-            <label>
-              <span>Frecuencia</span>
-              <select id="nature">
-                <option>Variable</option>
-                <option>Fijo</option>
-              </select>
-            </label>
-          </div>
-
-          <button class="btn btn-primary full" type="submit">Guardar movimiento</button>
-        </form>
-
-        <section class="panel quick-panel">
-          <div class="panel-head">
-            <div>
-              <p class="eyebrow">ATAJOS</p>
-              <h2>Gastos frecuentes</h2>
-            </div>
-          </div>
-          <div id="quickButtons" class="quick-grid"></div>
-        </section>
+      <section class="kpi-grid">
+        <article class="kpi-card">
+          <span>Ahorro disponible</span>
+          <strong id="liquidSavings">₲ 0</strong>
+          <small id="liquidSavingsSub">Saldo vivo</small>
+        </article>
+        <article class="kpi-card">
+          <span>Gasto de hoy</span>
+          <strong id="todayExpense">₲ 0</strong>
+          <small id="todayCount">0 movimientos</small>
+        </article>
+        <article class="kpi-card">
+          <span>Gourmet disponible</span>
+          <strong id="gourmetBalance">₲ 0</strong>
+          <small>Fuera del efectivo</small>
+        </article>
+        <article class="kpi-card">
+          <span>Ahorro + inversión</span>
+          <strong id="savingRate">0%</strong>
+          <small>Sobre ingresos del mes</small>
+        </article>
       </section>
 
-      <!-- MOVIMIENTOS -->
-      <section class="view" id="view-movements">
-        <div class="page-heading">
-          <p class="eyebrow">HISTORIAL</p>
-          <h2>Movimientos</h2>
-          <p>Buscá, filtrá y revisá en detalle en qué se fue tu dinero.</p>
+      <section class="panel">
+        <div class="panel-head">
+          <div><p class="eyebrow">¿EN QUÉ GASTASTE?</p><h2>Principales categorías</h2></div>
+          <button class="text-button" data-nav="stats">Ver análisis</button>
         </div>
-
-        <section class="panel filter-panel">
-          <input type="search" id="searchInput" placeholder="Buscar supermercado, auto, horas extra..." />
-          <div class="filter-row">
-            <select id="filterType">
-              <option value="">Todos los tipos</option>
-              <option>Gasto</option>
-              <option>Ingreso</option>
-              <option>Ahorro</option>
-              <option>Inversion</option>
-            </select>
-            <select id="filterCategory">
-              <option value="">Todas las categorías</option>
-            </select>
-          </div>
-        </section>
-
-        <div class="daily-summary" id="dailySummary"></div>
-        <div id="allTransactions" class="transaction-list large-list"></div>
+        <div id="homeCategoryBars" class="category-bars"></div>
       </section>
 
-      <!-- ESTADÍSTICAS -->
-      <section class="view" id="view-stats">
-        <div class="page-heading">
-          <p class="eyebrow">ANÁLISIS</p>
-          <h2>Estadísticas</h2>
-          <p>Visualizá tendencias, categorías y comportamiento diario.</p>
+      <section class="panel">
+        <div class="panel-head">
+          <div><p class="eyebrow">FONDO DE EMERGENCIA</p><h2>Avance de tu objetivo</h2></div>
+          <strong class="emerald" id="emergencyPct">0%</strong>
         </div>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div><p class="eyebrow">EVOLUCIÓN</p><h2>Gasto diario del mes</h2></div>
-          </div>
-          <div class="chart-wrap tall"><canvas id="dailyChart" height="250"></canvas></div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div><p class="eyebrow">DISTRIBUCIÓN</p><h2>Top categorías de gasto</h2></div>
-          </div>
-          <div id="statsCategories" class="stats-list"></div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div><p class="eyebrow">COMPORTAMIENTO</p><h2>Necesario vs deseo</h2></div>
-          </div>
-          <div class="comparison-grid">
-            <div><span>Necesario</span><strong id="necessaryTotal">Gs. 0</strong></div>
-            <div><span>Deseo</span><strong id="wantTotal">Gs. 0</strong></div>
-          </div>
-        </section>
+        <div class="progress-track"><div id="emergencyBar"></div></div>
+        <div class="progress-meta"><span id="emergencyCurrent">₲ 0</span><span id="emergencyGoal">Meta ₲ 0</span></div>
       </section>
 
-      <!-- MÁS -->
-      <section class="view" id="view-more">
-        <div class="page-heading">
-          <p class="eyebrow">CONFIGURACIÓN</p>
-          <h2>Más</h2>
-          <p>Parámetros, deudas, apariencia y respaldo.</p>
+      <section class="panel">
+        <div class="panel-head">
+          <div><p class="eyebrow">ÚLTIMOS MOVIMIENTOS</p><h2>Actividad reciente</h2></div>
+          <button class="text-button" data-nav="movements">Ver todos</button>
         </div>
-
-        <section class="panel">
-          <div class="panel-head"><div><p class="eyebrow">DEUDAS</p><h2>Cuotas activas</h2></div></div>
-          <div id="debtsList" class="debt-list"></div>
-        </section>
-
-        <section class="panel settings-list">
-          <button id="themeRow">
-            <span><b>Apariencia</b><small id="themeLabel">Automático</small></span><span>›</span>
-          </button>
-          <button id="setupRow">
-            <span><b>Datos iniciales</b><small>Editar ahorro inicial y meta de emergencia</small></span><span>›</span>
-          </button>
-          <button id="exportBtn">
-            <span><b>Exportar respaldo</b><small>Descargar archivo JSON</small></span><span>›</span>
-          </button>
-          <label class="settings-upload">
-            <span><b>Importar respaldo</b><small>Restaurar desde archivo JSON</small></span><span>›</span>
-            <input type="file" id="importInput" accept=".json" hidden />
-          </label>
-        </section>
-
-        <section class="panel note-panel">
-          <p><b>Saldo inicial de ahorro:</b> Gs. 3.860.525 al 05/08/2026.</p>
-          <p><b>Importante:</b> esta versión guarda los datos en este navegador. Para sincronizar iPhone y PC después conectaremos una base de datos.</p>
-        </section>
+        <div class="transaction-list" id="recentTransactions"></div>
       </section>
-    </main>
+      <div class="foreign-note hidden" id="foreignWarning"></div>
+    </section>
 
-    <nav class="bottom-nav">
-      <button class="active" data-nav="home"><span class="nav-icon">⌂</span><span>Inicio</span></button>
-      <button data-nav="movements"><span class="nav-icon">≡</span><span>Movimientos</span></button>
-      <button class="nav-add" data-nav="add"><span class="nav-plus">＋</span><span>Cargar</span></button>
-      <button data-nav="stats"><span class="nav-icon">⌁</span><span>Análisis</span></button>
-      <button data-nav="more"><span class="nav-icon">•••</span><span>Más</span></button>
-    </nav>
-  </div>
-
-
-  <div class="sheet hidden" id="setupSheet">
-    <div class="sheet-backdrop"></div>
-    <div class="sheet-card setup-card">
-      <div class="sheet-handle"></div>
+    <section class="view" id="view-add">
       <div class="page-heading">
-        <p class="eyebrow">PRIMER INICIO</p>
-        <h2>Configurá tus finanzas</h2>
-        <p>Indicá cuánto tenías ahorrado y la fecha exacta de ese saldo. Desde el día siguiente, los ingresos sumarán y los gastos restarán automáticamente.</p>
+        <p class="eyebrow">REGISTRO DIARIO</p>
+        <h2>Nuevo movimiento</h2>
+        <p>Cargá lo importante primero. Los detalles adicionales son opcionales.</p>
       </div>
-      <form id="setupForm">
-        <label><span>Ahorro acumulado inicial (Gs.)</span>
-          <input type="number" id="setupSavings" min="0" step="1000" inputmode="numeric" placeholder="0" required>
+
+      <form class="panel form-card" id="movementForm">
+        <div class="segmented" id="typeSegment">
+          <button type="button" class="active" data-type="Gasto">Gasto</button>
+          <button type="button" data-type="Ingreso">Ingreso</button>
+          <button type="button" data-type="Ahorro">Ahorro</button>
+          <button type="button" data-type="Inversion">Inversión</button>
+        </div>
+
+        <label>
+          <span class="field-label">Monto</span>
+          <div class="amount-box">
+            <span class="currency-prefix" id="currencyPrefix">₲</span>
+            <input id="amountDisplay" type="text" inputmode="decimal" autocomplete="off" placeholder="0" required>
+          </div>
         </label>
-        <label><span>Fecha de corte de ese saldo</span>
-          <input type="date" id="setupSavingsDate" required>
-        </label>
-        <label><span>Meta de fondo de emergencia</span>
-          <select id="setupEmergencyMonths">
-            <option value="3">3 meses de gastos fijos</option>
-            <option value="6" selected>6 meses de gastos fijos</option>
-            <option value="9">9 meses de gastos fijos</option>
-            <option value="12">12 meses de gastos fijos</option>
-          </select>
-        </label>
-        <p class="muted">Después cargá tu salario, Gourmet y gastos fijos desde la pestaña <b>Cargar</b>. El sistema aprenderá tu estructura mensual a partir de esos movimientos.</p>
-        <button class="btn btn-primary full" type="submit">Comenzar</button>
+
+        <div class="form-grid two">
+          <label><span class="field-label">Moneda</span><select id="currency"></select></label>
+          <label><span class="field-label">Cuenta</span><select id="account"><option>Banco</option><option>Efectivo</option><option>Tarjeta</option><option>Gourmet</option></select></label>
+        </div>
+
+        <div class="exchange-box hidden" id="exchangeBox">
+          <span class="field-label" id="exchangeLabel">Tipo de cambio</span>
+          <div class="exchange-input">
+            <span>1 <b id="foreignCode">USD</b> =</span>
+            <input id="exchangeRate" type="text" inputmode="decimal" autocomplete="off" placeholder="0">
+            <span id="baseSymbol">₲</span>
+          </div>
+          <small>Se usa para convertir este movimiento a tu moneda principal.</small>
+        </div>
+
+        <label><span class="field-label">¿En qué fue?</span><input id="description" type="text" maxlength="100" placeholder="Ej.: supermercado Stock, cena, horas extra..." required></label>
+
+        <div class="form-grid two">
+          <label><span class="field-label">Categoría</span><select id="category"></select></label>
+          <label><span class="field-label">Fecha</span><input id="date" type="date" required></label>
+        </div>
+
+        <button class="more-toggle" type="button" id="moreDetailsBtn">+ Más detalles</button>
+        <div class="more-details hidden" id="moreDetails">
+          <label><span class="field-label">Subcategoría</span><input id="subcategory" type="text" maxlength="60" placeholder="Ej.: supermercado, combustible, reparación..."></label>
+          <label><span class="field-label">Detalle / motivo</span><textarea id="detail" rows="3" maxlength="240" placeholder="Qué compraste, por qué, para quién, etc."></textarea></label>
+          <div class="form-grid two">
+            <label><span class="field-label">Clasificación</span><select id="priority"><option>Necesario</option><option>Deseo</option><option>Meta</option></select></label>
+            <label><span class="field-label">Frecuencia</span><select id="nature"><option>Variable</option><option>Fijo</option></select></label>
+          </div>
+        </div>
+        <button class="button primary full" type="submit">Guardar movimiento</button>
       </form>
-    </div>
-  </div>
 
-  <div class="sheet hidden" id="detailSheet">
-    <div class="sheet-backdrop" data-close-sheet></div>
-    <div class="sheet-card">
-      <div class="sheet-handle"></div>
-      <div id="sheetContent"></div>
-      <div class="sheet-actions">
-        <button class="btn btn-danger" id="deleteTxBtn">Eliminar</button>
-        <button class="btn btn-secondary" data-close-sheet>Cerrar</button>
-      </div>
-    </div>
-  </div>
+      <section class="panel">
+        <div class="panel-head"><div><p class="eyebrow">ATAJOS</p><h2>Gastos frecuentes</h2></div></div>
+        <div class="quick-grid" id="quickButtons"></div>
+      </section>
+    </section>
 
-  <div class="toast hidden" id="toast"></div>
-  <script src="app.js"></script>
+    <section class="view" id="view-movements">
+      <div class="page-heading"><p class="eyebrow">HISTORIAL</p><h2>Movimientos</h2><p>Revisá exactamente en qué gastaste y filtrá por tipo, categoría o moneda.</p></div>
+      <section class="panel filter-card">
+        <input id="searchInput" type="search" placeholder="Buscar supermercado, auto, horas extra...">
+        <div class="form-grid two">
+          <select id="filterType"><option value="">Todos los tipos</option><option>Gasto</option><option>Ingreso</option><option>Ahorro</option><option>Inversion</option></select>
+          <select id="filterCurrency"><option value="">Todas las monedas</option></select>
+        </div>
+        <select id="filterCategory"><option value="">Todas las categorías</option></select>
+      </section>
+      <div class="daily-strip" id="dailySummary"></div>
+      <div class="transaction-list large" id="allTransactions"></div>
+    </section>
+
+    <section class="view" id="view-stats">
+      <div class="page-heading"><p class="eyebrow">ANÁLISIS</p><h2>Estadísticas</h2><p>Lecturas simples para entender si tu dinero está creciendo o se está drenando.</p></div>
+      <section class="panel">
+        <div class="panel-head">
+          <div><p class="eyebrow">6 MESES</p><h2>Ingresos vs gastos</h2></div>
+          <div class="legend"><span><i class="dot income"></i>Ingresos</span><span><i class="dot expense"></i>Gastos</span></div>
+        </div>
+        <svg id="monthlyChart" class="line-chart" viewBox="0 0 360 190" preserveAspectRatio="none"></svg>
+        <div id="monthlyAxis" class="axis-labels"></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><p class="eyebrow">DÍA A DÍA</p><h2>Gasto diario del mes</h2></div></div>
+        <div class="daily-chart" id="dailyChart"></div>
+        <div class="chart-scale"><span>1</span><span id="midDayLabel">15</span><span id="lastDayLabel">30</span></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><p class="eyebrow">DISTRIBUCIÓN</p><h2>¿Dónde se va tu dinero?</h2></div></div>
+        <div class="category-bars detailed" id="statsCategoryBars"></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><p class="eyebrow">CALIDAD DEL GASTO</p><h2>Necesario vs deseo</h2></div></div>
+        <div class="comparison-grid"><div><span>Necesario</span><strong id="necessaryTotal">₲ 0</strong></div><div><span>Deseo</span><strong id="wantTotal">₲ 0</strong></div></div>
+      </section>
+    </section>
+
+    <section class="view" id="view-more">
+      <div class="page-heading"><p class="eyebrow">CONFIGURACIÓN</p><h2>Más</h2><p>Moneda, saldo inicial, apariencia y respaldo.</p></div>
+      <section class="panel settings-list">
+        <button id="currencySettingsBtn"><span><b>Moneda principal</b><small id="baseCurrencyLabel">PYG · Guaraní paraguayo</small></span><span>›</span></button>
+        <button id="initialSettingsBtn"><span><b>Datos iniciales</b><small>Ahorro inicial y fondo de emergencia</small></span><span>›</span></button>
+        <button id="themeRow"><span><b>Apariencia</b><small id="themeLabel">Automático</small></span><span>›</span></button>
+        <button id="exportBtn"><span><b>Exportar respaldo</b><small>Descargar tus datos en JSON</small></span><span>›</span></button>
+        <label class="settings-upload"><span><b>Importar respaldo</b><small>Restaurar desde archivo JSON</small></span><span>›</span><input type="file" id="importInput" accept=".json" hidden></label>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><p class="eyebrow">GASTOS FIJOS</p><h2>Compromiso mensual</h2></div></div>
+        <div id="fixedExpensesList" class="fixed-list"></div>
+      </section>
+      <section class="panel note-panel">
+        <p><b>Privacidad:</b> tus movimientos se guardan en este navegador, no en GitHub.</p>
+        <p><b>Multimoneda:</b> al cargar una moneda distinta a la principal, el sistema solicita el tipo de cambio utilizado.</p>
+      </section>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="active" data-nav="home"><span class="nav-icon">⌂</span><span>Inicio</span></button>
+    <button data-nav="movements"><span class="nav-icon">≡</span><span>Movimientos</span></button>
+    <button class="nav-add" data-nav="add"><span class="nav-plus">＋</span><span>Cargar</span></button>
+    <button data-nav="stats"><span class="nav-icon">⌁</span><span>Análisis</span></button>
+    <button data-nav="more"><span class="nav-icon">•••</span><span>Más</span></button>
+  </nav>
+</div>
+
+<div class="sheet hidden" id="detailSheet">
+  <div class="sheet-backdrop" data-close-sheet></div>
+  <div class="sheet-card"><div class="sheet-handle"></div><div id="sheetContent"></div><div class="sheet-actions"><button class="button danger" id="deleteTxBtn">Eliminar</button><button class="button secondary" data-close-sheet>Cerrar</button></div></div>
+</div>
+
+<div class="sheet hidden" id="initialSheet">
+  <div class="sheet-backdrop"></div>
+  <div class="sheet-card">
+    <div class="sheet-handle"></div>
+    <div class="page-heading compact-heading"><p class="eyebrow">CONFIGURACIÓN</p><h2>Datos iniciales</h2><p>El saldo de corte evita contabilizar dos veces movimientos históricos.</p></div>
+    <form id="initialForm">
+      <label><span class="field-label">Ahorro disponible inicial</span><div class="amount-box small"><span class="currency-prefix" id="initialCurrencyPrefix">₲</span><input id="initialSavingsDisplay" type="text" inputmode="decimal" autocomplete="off" placeholder="0" required></div></label>
+      <label><span class="field-label">Fecha de corte</span><input type="date" id="initialSavingsDate" required></label>
+      <label><span class="field-label">Meta de fondo de emergencia</span><select id="emergencyMonths"><option value="3">3 meses de gastos fijos</option><option value="6">6 meses de gastos fijos</option><option value="9">9 meses de gastos fijos</option><option value="12">12 meses de gastos fijos</option></select></label>
+      <button class="button primary full" type="submit">Guardar</button>
+    </form>
+  </div>
+</div>
+
+<div class="sheet hidden" id="currencySheet">
+  <div class="sheet-backdrop" data-close-currency></div>
+  <div class="sheet-card">
+    <div class="sheet-handle"></div>
+    <div class="page-heading compact-heading"><p class="eyebrow">MONEDA</p><h2>Moneda principal</h2><p>El dashboard convierte todos los movimientos a esta moneda.</p></div>
+    <div id="currencyChoices" class="currency-choices"></div>
+    <button class="button secondary full" data-close-currency>Cerrar</button>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+<script src="app.js"></script>
 </body>
 </html>
