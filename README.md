@@ -27,3 +27,16 @@ Safari → Compartir → Agregar a Inicio → Abrir como app web.
 ## Privacidad
 Los movimientos quedan en `localStorage` de Safari y no se publican en GitHub.
 Usá Más → Exportar respaldo periódicamente.
+
+
+## V4.1 — Corrección de caché
+
+Esta revisión agrega versionado explícito a `styles.css`, `app.js` y `manifest.json`
+para impedir que GitHub Pages, Safari o un service worker anterior mezclen HTML nuevo
+con CSS/JavaScript antiguo.
+
+Al actualizar desde una versión anterior:
+1. Reemplazar todos los archivos del repositorio.
+2. Esperar a que GitHub Pages finalice el despliegue.
+3. Abrir la URL en Safari/Chrome y recargar.
+4. La app instalada debería actualizarse al volver a abrirla.
